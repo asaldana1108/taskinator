@@ -84,7 +84,6 @@ var createTaskEL = function(taskDataObj) {
 
     taskDataObj.id = taskIdCounter;
     tasks.push(taskDataObj);
-    saveTasks();
 
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
@@ -94,6 +93,8 @@ var createTaskEL = function(taskDataObj) {
 
     // increase task counter for next unique id
     taskIdCounter++; 
+
+    saveTasks();
 }
 var createTaskActions = function(taskId) {
     var actionContainerEl = document.createElement("div");
@@ -268,8 +269,27 @@ var dragLeaveHandler = function(event) {
 }
 
 var saveTasks = function() {
-    localStorage.setItem("task", JSON.stringify(tasks));
+    localStorage.setItem("tasks", JSON.stringify(tasks));
 }
+
+var loadTasks = function() {
+    // get task items from localStorage
+    var savedTasks = localStorage.getItem("tasks");
+
+    if (!savedTasks) {
+        return false; 
+    }
+    // convert tasks from stringified format back into an array of objects
+    savedTasks = JSON.parse(savedTasks);
+    
+    // iterate through tasks array and creates task elements on the page from it
+    for (var i = 0; i < savedTasks.length; i++) {
+        //pass each task object into the 'createTaskEl()' function
+        createTaskEL(savedTasks[i]);
+    }
+}
+
+loadTasks();
 
 pageContentEl.addEventListener("click", taskButtonHandler); 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
@@ -277,4 +297,5 @@ pageContentEl.addEventListener("dragstart", dragTaskHandler);
 pageContentEl.addEventListener("dragover", dropZoneDragHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
 pageContentEl.addEventListener("dragleave", dragLeaveHandler);
+
 
